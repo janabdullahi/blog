@@ -1,0 +1,21 @@
+--->python
+--->from flaskblog import db
+--->db.create_all()
+--->from flaskblog import User,Post
+--->user_1=User(username='jan',email='jan',password='jan',role=1)
+--->db.session.add(user_1)
+--->db.session.commit()
+--->User.query.all() # showing all users 
+--->User.query.first() #showing first user 
+
+
+hashing password
+--->python
+--->from flask_bcrypt import Bcrypt
+--->bcrypt=Bcrypt()
+--->hashed_pw=bcrypt.generate_password_hash('hamedjan').decode('utf-8')
+--->bcrypt.check_password_hash(hashed_pw,'hamedjan')
+
+
+
+--->tree # showing tree path
