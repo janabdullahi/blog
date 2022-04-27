@@ -1,10 +1,10 @@
 import os
 import secrets
 from PIL import Image
-from flask import render_template, url_for, flash, redirect, request
+from flask import render_template, url_for, flash, redirect, request,abort
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm,PostForm
-from flaskblog.models import User, Post
+from flaskblog.models import User, Post,PostLike
 from flask_login import login_user, current_user, logout_user, login_required
 
 
@@ -45,10 +45,14 @@ def login():
         user = User.query.filter_by(email=form.email.data).first()
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
+             #role
+            if user.role == 3:
+                return redirect(url_for('home'))
+
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
-            flash('Login Unsuccessful. Please check email and password', 'danger')
+            flash('Unsuccessful Login . Please enter valid email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 
@@ -104,7 +108,83 @@ def new_post():
         post=Post(title=form.title.data,content=form.content.data,author=current_user)
         db.session.add(post)
         db.session.commit()
-        flash('Your post has been created!', 'success')
+        flash('Your post has been created successfully!', 'success')
         return redirect(url_for('home'))
-    return render_template('create_post.html', title='New Post',form=form)
+    return render_template('create_post.html', title='New Post',
+    form=form,legend="Creating The New Post")
 
+@app.route("/post/<int:post_id>")
+def post(post_id):
+    post = Post.query.get_or_404(post_id)
+    return render_template('post.html', title=post.title, post=post)
+
+
+
+@app.route("/post/<int:post_id>/update", methods=['GET', 'POST'])
+@login_required
+def update_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if post.author != current_user:
+        abort(403)
+    form = PostForm()
+    if form.validate_on_submit():
+        post.title = form.title.data
+        post.content = form.content.data
+        db.session.commit()
+        flash(' updated!', 'success')
+        return redirect(url_for('post', post_id=post.id))
+    elif request.method == 'GET':
+        form.title.data = post.title
+        form.content.data = post.content
+    return render_template('create_post.html', title='Update Post',
+                           form=form, legend='Update Post')
+
+
+
+@app.route("/post/<int:post_id>/delete", methods=['POST'])
+@login_required
+def delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    if current_user.id==4:
+        db.session.delete(post)
+        db.session.commit()
+        flash('deleted!', 'success')
+        return redirect(url_for('home'))     
+    if post.author != current_user:
+        abort(403)
+    db.session.delete(post)
+    db.session.commit()
+    flash('deleted!', 'success')
+    return redirect(url_for('home'))
+
+
+@app.route('/like/<int:post_id>/<action>')
+@login_required
+def like_action(post_id, action):
+    post = Post.query.filter_by(id=post_id).first_or_404()
+    if action == 'like':
+        current_user.like_post(post)
+        db.session.commit()
+    if action == 'unlike':
+        current_user.unlike_post(post)
+        db.session.commit()
+    return redirect(request.referrer)
+
+
+@app.route("/approvals")
+def approvals():
+    page = request.args.get('page', 1, type=int)
+    posts = Post.query.filter_by(is_approved=False).order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
+
+    return render_template('approvals_posts.html', posts=posts)
+
+
+@app.route("/post/<int:post_id>/approve", methods=['GET', 'POST'])
+@login_required
+def approve_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    post.is_approved = True
+    db.session.commit()
+    flash('Post has been approved!', 'success')
+
+    return redirect(url_for('approvals'))

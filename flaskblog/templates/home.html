@@ -5,7 +5,8 @@
           
           <div class="media-body">
             
-            <h2><a class="article-title" href="#">{{ post.title }}
+            <h2><a class="article-title" 
+              href="{{url_for('post',post_id=post.id)}}">{{ post.title }}
               <small class="text-muted">{{ post.date_posted.strftime('%d/%m/%y') }}</small>
             </a></h2>
             
