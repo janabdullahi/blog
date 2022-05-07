@@ -51,6 +51,7 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     likes = db.relationship('PostLike', backref='post', lazy='dynamic')
     is_approved = db.Column(db.Boolean, default=False)
+    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.date_posted}')"

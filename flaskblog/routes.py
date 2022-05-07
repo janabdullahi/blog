@@ -1,7 +1,9 @@
+from email.mime import image
 import os
 import secrets
 from PIL import Image
 from flask import render_template, url_for, flash, redirect, request,abort
+from httplib2 import Response
 from flaskblog import app, db, bcrypt
 from flaskblog.forms import RegistrationForm, LoginForm, UpdateAccountForm,PostForm
 from flaskblog.models import User, Post,PostLike
@@ -11,7 +13,7 @@ from flask_login import login_user, current_user, logout_user, login_required
 @app.route("/")
 @app.route("/home")
 def home():
-    posts=Post.query.all()
+    posts=Post.query.filter_by(is_approved = True)
     return render_template('home.html', posts=posts)
 
 
@@ -52,7 +54,7 @@ def login():
             next_page = request.args.get('next')
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
-            flash('Unsuccessful Login . Please enter valid email and password', 'danger')
+            flash('Please enter valid email and password', 'danger')
     return render_template('login.html', title='Login', form=form)
 
 
@@ -100,18 +102,45 @@ def account():
                            image_file=image_file, form=form)
 
 
+# @app.route("/post/new", methods=['GET', 'POST'])
+# @login_required
+# def new_post():
+#     form = PostForm()
+#     if form.validate_on_submit():
+#         post=Post(title=form.title.data,content=form.content.data,author=current_user)
+#         db.session.add(post)
+#         db.session.commit()
+#         flash('Your post has been created successfully!', 'success')
+#         return redirect(url_for('home'))
+#     return render_template('create_post.html', title='New Post',
+#     form=form,legend="Creating The New Post")
+
+
+def save_post_picture(form_picture):
+    random_hex = secrets.token_hex(8)
+    _, f_ext = os.path.splitext(form_picture.filename)
+    picture_fn = random_hex + f_ext
+    picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
+    i = Image.open(form_picture)
+    i.save(picture_path)
+    return picture_fn
+
 @app.route("/post/new", methods=['GET', 'POST'])
 @login_required
 def new_post():
     form = PostForm()
     if form.validate_on_submit():
-        post=Post(title=form.title.data,content=form.content.data,author=current_user)
+        if form.picture.data:
+            picture_file = save_post_picture(form.picture.data)
+            post = Post(title=form.title.data, content=form.content.data, image_file=picture_file, author=current_user)
+        else:
+            post = Post(title=form.title.data, content=form.content.data, author=current_user)
         db.session.add(post)
         db.session.commit()
-        flash('Your post has been created successfully!', 'success')
+        flash('Your post has been created!', 'success')
         return redirect(url_for('home'))
     return render_template('create_post.html', title='New Post',
-    form=form,legend="Creating The New Post")
+        form=form, legend='Create Post')
 
 @app.route("/post/<int:post_id>")
 def post(post_id):
@@ -128,10 +157,13 @@ def update_post(post_id):
         abort(403)
     form = PostForm()
     if form.validate_on_submit():
+        if form.picture.data:
+            picture_file = save_post_picture(form.picture.data)
+            post.image_file=picture_file
         post.title = form.title.data
         post.content = form.content.data
         db.session.commit()
-        flash(' updated!', 'success')
+        flash(' Updated!', 'success')
         return redirect(url_for('post', post_id=post.id))
     elif request.method == 'GET':
         form.title.data = post.title
@@ -145,16 +177,16 @@ def update_post(post_id):
 @login_required
 def delete_post(post_id):
     post = Post.query.get_or_404(post_id)
-    if current_user.id==4:
-        db.session.delete(post)
-        db.session.commit()
-        flash('deleted!', 'success')
-        return redirect(url_for('home'))     
+    # if current_user.id==4:
+    #     db.session.delete(post)
+    #     db.session.commit()
+    #     flash('deleted!', 'success')
+    #     return redirect(url_for('home'))     
     if post.author != current_user:
         abort(403)
     db.session.delete(post)
     db.session.commit()
-    flash('deleted!', 'success')
+    flash('Deleted!', 'success')
     return redirect(url_for('home'))
 
 
@@ -185,6 +217,6 @@ def approve_post(post_id):
     post = Post.query.get_or_404(post_id)
     post.is_approved = True
     db.session.commit()
-    flash('Post has been approved!', 'success')
+    flash('Your post has been approved!', 'success')
 
     return redirect(url_for('approvals'))

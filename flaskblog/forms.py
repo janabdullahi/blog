@@ -17,12 +17,12 @@ class RegistrationForm(FlaskForm):
     def validate_username(self, username):
         user = User.query.filter_by(username=username.data).first()
         if user:
-            raise ValidationError('That username is already exist!.')
+            raise ValidationError('Username is already exist!.')
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
         if user:
-            raise ValidationError('That email is taken. Please choose a different one.')
+            raise ValidationError(' Email is taken. Please choose a different one.')
 
 
 class LoginForm(FlaskForm):
@@ -42,15 +42,16 @@ class UpdateAccountForm(FlaskForm):
         if username.data != current_user.username:
             user = User.query.filter_by(username=username.data).first()
             if user:
-                raise ValidationError('That username is already exist. Please select different username.')
+                raise ValidationError('Username is already exist. Please select different username.')
 
     def validate_email(self, email):
         if email.data != current_user.email:
             user = User.query.filter_by(email=email.data).first()
             if user:
-                raise ValidationError('That email is already exist. Please select different email.')
+                raise ValidationError('Email is already exist. Please select different email.')
 
 class PostForm(FlaskForm):
     title = StringField('Title', validators=[DataRequired()])
     content = TextAreaField('Content', validators=[DataRequired()])
+    picture = FileField('add a picture', validators=[FileAllowed(['jpg', 'png'])])
     submit = SubmitField('Post') 

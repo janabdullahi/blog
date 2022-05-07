@@ -1,3 +1,4 @@
+
 --->python
 --->from flaskblog import db
 --->db.create_all()
@@ -20,3 +21,11 @@ hashing password
 
 
 --->tree # showing tree path
+
+
+
+
+---> git status
+---> git add
+---> git commit -m ""
+---> git push

@@ -27,21 +27,30 @@
         <a class="mr-2" href="#">{{ post.author.username }}</a>
         <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
       </div>
-      </div>
+    </div>
       <h2 class="article-title">{{ post.title }}</h2>
       <p class="article-content">{{ post.content }}</p>
+      <!-- post pic-->
+      <div class="card  my-2">
+        {% if post.image_file %}
+            <img class="card-img-top"
+             src="{{ url_for('static', filename='profile_pics/' + post.image_file) }}" alt="">
+        {% endif %}
+    </div>
+    <!-- post pic-->
           <div>
-      {% if post.author == current_user or current_user.id==4 %}
+      {% if post.author == current_user  %}
           <button type="button" class="btn btn-danger btn-sm m-1" 
             data-toggle="modal" data-target="#deleteModal">Delete</button>
-        </div>
-        {%if post.author == current_user%}
-          <div>
             <a class="btn btn-secondary btn-sm mt-1 mb-1" 
             href="{{ url_for('update_post', post_id=post.id) }}">Update</a>
           </div>
-          {% endif %}
-          {%endif%}
+        <!-- {%if post.author == current_user%}
+          <div>
+
+          </div>
+          {% endif %} -->
+          <!-- {%endif%} -->
     </div>
         </div>
 
