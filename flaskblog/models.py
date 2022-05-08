@@ -8,6 +8,9 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+# Usermixin help users for logging 
+# backref used to allows you to declare a new property under a specified class
+# lazy = True (when to get children)
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), unique=True, nullable=False)

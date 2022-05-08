@@ -2,7 +2,9 @@
 {% block content %}
 <div class="content-section">
     <form method="POST" action="" enctype="multipart/form-data">
+        <!--  If you want to allow a user to upload a file via a form, you must use this enctype. -->
         {{ form.hidden_tag() }}
+        <!-- generates a hidden field that includes a token that is used to protect the form against CSRF attacks. -->
         <fieldset class="form-group">
             <legend class="border-bottom mb-4">{{ legend }}</legend>
             <div class="form-group">

@@ -13,7 +13,8 @@ from flask_login import login_user, current_user, logout_user, login_required
 @app.route("/")
 @app.route("/home")
 def home():
-    posts=Post.query.filter_by(is_approved = True)
+    page = request.args.get('page', 1, type=int)
+    posts=Post.query.filter_by(is_approved = True).order_by(Post.date_posted.desc()).paginate(page=page, per_page=4)
     return render_template('home.html', posts=posts)
 
 
@@ -51,7 +52,7 @@ def login():
             if user.role == 3:
                 return redirect(url_for('home'))
 
-            next_page = request.args.get('next')
+            next_page = request.args.get('next') # args.get() is method get() for MultiDict,
             return redirect(next_page) if next_page else redirect(url_for('home'))
         else:
             flash('Please enter valid email and password', 'danger')
@@ -69,6 +70,7 @@ def save_picture(form_picture):
     #we can use (f_name) or (_) in the next line 
     # for taking the filename with and without extension = (f_ext),(_) 
     _, f_ext = os.path.splitext(form_picture.filename)
+    #os.path.splitext() method in Python is used to split the path name into a pair root and ext.
     picture_fn = random_hex + f_ext
     picture_path = os.path.join(app.root_path, 'static/profile_pics', picture_fn)
 
@@ -81,6 +83,7 @@ def save_picture(form_picture):
     return picture_fn
 
 
+
 @app.route("/account", methods=['GET', 'POST'])
 @login_required
 def account():
@@ -91,29 +94,27 @@ def account():
             current_user.image_file = picture_file
         current_user.username = form.username.data
         current_user.email = form.email.data
+
+        if form.new_password.data and form.confirm_password.data:
+            if form.new_password.data == form.confirm_password.data:
+                        new_hashed_password = bcrypt.generate_password_hash(form.new_password.data).decode('utf-8')
+                        user = User.query.get(current_user.id)
+                        user.password = new_hashed_password
+                        db.session.commit()
+                        logout_user()
+                        flash('Password changed successfully!', 'success')
+                        return redirect(url_for('login'))
+            else:
+                flash('New password and Confirm Password doesnt match!', 'danger')
+                return redirect(url_for('account'))
         db.session.commit()
-        flash('Updated!', 'success')
+        flash('your account has been updated!', 'success')
         return redirect(url_for('account'))
     elif request.method == 'GET':
         form.username.data = current_user.username
         form.email.data = current_user.email
     image_file = url_for('static', filename='profile_pics/' + current_user.image_file)
-    return render_template('account.html', title='Account',
-                           image_file=image_file, form=form)
-
-
-# @app.route("/post/new", methods=['GET', 'POST'])
-# @login_required
-# def new_post():
-#     form = PostForm()
-#     if form.validate_on_submit():
-#         post=Post(title=form.title.data,content=form.content.data,author=current_user)
-#         db.session.add(post)
-#         db.session.commit()
-#         flash('Your post has been created successfully!', 'success')
-#         return redirect(url_for('home'))
-#     return render_template('create_post.html', title='New Post',
-#     form=form,legend="Creating The New Post")
+    return render_template('account.html', title='Account', image_file=image_file, form=form)
 
 
 def save_post_picture(form_picture):
@@ -124,6 +125,7 @@ def save_post_picture(form_picture):
     i = Image.open(form_picture)
     i.save(picture_path)
     return picture_fn
+
 
 @app.route("/post/new", methods=['GET', 'POST'])
 @login_required
@@ -176,12 +178,7 @@ def update_post(post_id):
 @app.route("/post/<int:post_id>/delete", methods=['POST'])
 @login_required
 def delete_post(post_id):
-    post = Post.query.get_or_404(post_id)
-    # if current_user.id==4:
-    #     db.session.delete(post)
-    #     db.session.commit()
-    #     flash('deleted!', 'success')
-    #     return redirect(url_for('home'))     
+    post = Post.query.get_or_404(post_id)    
     if post.author != current_user:
         abort(403)
     db.session.delete(post)
@@ -200,13 +197,13 @@ def like_action(post_id, action):
     if action == 'unlike':
         current_user.unlike_post(post)
         db.session.commit()
-    return redirect(request.referrer)
+    return redirect(request.referrer)# referrer contains the address of the previous web page from
 
 
 @app.route("/approvals")
 def approvals():
     page = request.args.get('page', 1, type=int)
-    posts = Post.query.filter_by(is_approved=False).order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
+    posts = Post.query.filter_by(is_approved=False).order_by(Post.date_posted.desc()).paginate(page=page, per_page=4)
 
     return render_template('approvals_posts.html', posts=posts)
 
