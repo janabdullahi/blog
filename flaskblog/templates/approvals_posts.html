@@ -1,5 +1,6 @@
-{% extends "layout.html" %} {% block content %} {% if posts.items %} {% for post
-in posts.items %}
+{% extends "layout.html" %} {% block content %} 
+{% if posts.items %} 
+{% for post in posts.items %}
 <article class="media content-section">
   <div class="media-body">
     <div class="article-metadata d-flex justify-content-between">
@@ -7,54 +8,66 @@ in posts.items %}
         <img
           src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}"
           alt=""
-          class="rounded-circle account-img"/>
+          class="rounded-circle account-img"
+        />
       </div>
 
       <div class="d-flex">
         {% if current_user.role == 1 %}
         <form
           action="{{ url_for('approve_post', post_id=post.id) }}"
-          method="post">
+          method="post"
+        >
           <div>
             <input
               type="submit"
               class="btn btn-secondary btn-sm mt-1 mb-1"
-              value="approve"/>
+              value="approve"
+            />
           </div>
         </form>
+
         <form
           action="{{ url_for('delete_post', post_id=post.id) }}"
-          method="post">
+          method="post"
+        >
           <input
             type="submit"
             class="btn btn-danger btn-sm m-1"
-            value="Delete"/>
+            value="Delete"
+          />
         </form>
+
         {% endif %}
       </div>
     </div>
     <h2>
       <a class="article-title" href="{{ url_for('post', post_id=post.id) }}">
-        {{ post.title }}</a>
+        {{ post.title }}</a
+      >
     </h2>
     <p class="article-content">{{ post.content }}</p>
   </div>
 </article>
-{% endfor %} 
+{% endfor %}
 
 {% else %}
 <p>No Post...</p>
 {% endif %}
 
 {% for page_num in posts.iter_pages( left_edge=1, right_edge=1,
-left_current=1, right_current=2 ) %} {% if page_num %} {% if posts.page==page_num %}
-<a class="btn btn-info mb-4" href="{{ url_for('approvals', page=page_num) }}">
-  {{ page_num }}</a>
+left_current=1, right_current=2 ) %}
 
-  {% else %}
+{% if page_num %} 
+{% if posts.page==page_num %}
+  <a class="btn btn-info mb-4" href="{{ url_for('approvals', page=page_num) }}">{{ page_num }}</a>
 
-<a class="btn btn-outline-info mb-4"
-  href="{{ url_for('approvals', page=page_num) }}">
-  {{ page_num }}</a>
+{% else %}
+<a class="btn btn-outline-info mb-4" href="{{ url_for('approvals', page=page_num) }}">{{ page_num }}</a>
 
-  {% endif %} {% else %} ... {% endif %} {% endfor %} {% endblock %}
+{% endif %}
+{% else %}
+  ... 
+{% endif %} 
+{% endfor %} 
+{% endblock %}

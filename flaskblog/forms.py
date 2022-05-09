@@ -15,9 +15,11 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
+        # field.data = username(re.sub(r'[^()a-z0-9_.-]', '_', str(field.data).lower()))
         user = User.query.filter_by(username=username.data).first()
         if user:
             raise ValidationError('Username is already exist!.')
+
 
     def validate_email(self, email):
         user = User.query.filter_by(email=email.data).first()
@@ -37,8 +39,8 @@ class UpdateAccountForm(FlaskForm):
     email = StringField('Email',validators=[DataRequired(), Email()])
     picture = FileField('Update Profile Picture', validators=[FileAllowed(['jpg', 'png'])])
     password = PasswordField('password')
-    new_password = PasswordField('new_password')
-    confirm_password = PasswordField('confirm_password')
+    new_password = PasswordField('New Password')
+    confirm_password = PasswordField('Confirm Password')
     submit = SubmitField('Update')
     
 
