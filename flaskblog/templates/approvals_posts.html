@@ -1,4 +1,21 @@
 {% extends "layout.html" %} {% block content %} 
+
+<table>
+<thead class="d-flex justify-content-around">
+  <th>
+    Post Title
+  </th>
+  <th>
+    Blogger
+  </th>
+  <th>
+    Actions
+  </th>
+</thead>
+<tbody>
+
+</tbody>
+</table>
 {% if posts.items %} 
 {% for post in posts.items %}
 <article class="media content-section">
@@ -15,13 +32,13 @@
       <div class="d-flex">
         {% if current_user.role == 1 %}
         <form
-          action="{{ url_for('approve_post', post_id=post.id) }}"
+          action="{{ url_for('approve_post', post_title=post.title) }}"
           method="post"
         >
           <div>
             <input
               type="submit"
-              class="btn btn-secondary btn-sm mt-1 mb-1"
+              class="btn btn-success btn-sm mt-1 mb-1"
               value="approve"
             />
           </div>
@@ -42,7 +59,7 @@
       </div>
     </div>
     <h2>
-      <a class="article-title" href="{{ url_for('post', post_id=post.id) }}">
+      <a class="article-title" href="{{ url_for('post', post_title=post.title) }}">
         {{ post.title }}</a
       >
     </h2>

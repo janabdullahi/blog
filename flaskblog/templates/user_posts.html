@@ -1,0 +1,60 @@
+{% extends "layout.html" %}
+{% block content %}
+    <h1 class="mb-3">
+        Posts by {{ user.username }} ({{ posts.total }})
+    </h1>
+    
+    {% for post in posts.items %} 
+        <article class="media content-section d-flex flex-row">
+            <div class="media-body">
+                <div class="article-metadata d-flex justify-content-between mt-2">
+                    <div class="d-flex">
+                        <img src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}" alt=""
+                            class="rounded-circle account-img">
+                        
+                        <div>
+                            <a class="d-block mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
+                            <small class="d-block text-muted">{{ post.date_posted.strftime('%d-%B-%y %H:%m') }}</small>                    
+                        </div>
+                    </div>
+                </div>
+                
+                <h2>
+                    <a class="article-title" href="{{ url_for('post', post_title=post.title) }}">{{ post.title }}</a>
+                </h2>
+
+                <p class="article-content">{{ post.content }}</p>
+                
+                {% if current_user.is_authenticated %}
+                {% if current_user.has_liked_post(post) %}
+                    <a class="btn btn-outline-secondary" style="float:right"  
+                    href="{{ url_for('like_action', post_id=post.id, action='unlike') }}">
+                    <i class="fas fa-thumbs-down"> 
+                            {{ post.likes.count()}} 
+                        </i>
+                    </a>
+                    {%else%}
+                    <a class="btn btn-outline-secondary" style="float:right" 
+                    href="{{ url_for('like_action', post_id=post.id, action='like') }}">
+                   <i class="fas fa-thumbs-up"> 
+                            {{ post.likes.count()}}
+                        </i>
+                    </a>
+                    {%endif%}
+                    {%endif%}
+            </div>
+        </article>
+    {% endfor %}
+    
+    {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %} 
+        {% if page_num %}
+            {% if posts.page == page_num %}
+                <a class="btn btn-primary mb-4" href="{{ url_for('user_posts', username=user.username, page=page_num) }}"> {{ page_num }}</a>
+            {% else %}
+                <a class="btn btn-outline-primary mb-4" href="{{ url_for('user_posts', username=user.username, page=page_num) }}"> {{ page_num }}</a>
+            {% endif %}
+        {% else %}
+            ...   
+        {% endif %}
+    {% endfor %}
+{% endblock %}

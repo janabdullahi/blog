@@ -19,7 +19,6 @@ hashing password
 --->bcrypt.check_password_hash(hashed_pw,'jan')
 
 
-
 --->tree # showing tree path
 
 
@@ -29,3 +28,8 @@ hashing password
 ---> git add
 ---> git commit -m ""
 ---> git push
+
+
+
+---> export FLASK_APP=run.py
+---> flask run --host=0.0.0.0

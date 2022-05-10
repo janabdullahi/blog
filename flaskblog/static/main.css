@@ -12,6 +12,18 @@ body {
     /* background-color: hsla(30, 100%, 50%, .3); */
     background-color: rgb(0, 0, 0);
   }
+  
+  .article-content {
+    white-space: pre-line;
+  }
+  
+  .article-content.post-preview {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* number of lines to show */
+    -webkit-box-orient: vertical;
+  }
   .likes-buttons{
     border: none;
   }
