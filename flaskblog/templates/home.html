@@ -1,23 +1,26 @@
 {% extends "layout.html" %}
 {% block content %}
-    {% for post in posts.items %}
-        <article class="media content-section">
-          <div class="media-body">
-            
-            <h2><a class="article-title" 
-              href="{{url_for('post',post_title=post.title)}}">{{ post.title }}
-              <small class="d-block text-muted">{{ post.date_posted.strftime('%d-%B-%y %H:%m') }}</small>
-            </a></h2>  
-            <p class="article-content post-preview"> {{ post.content }} </p>
-            
-          </div>
-          <div class="article-metadata">
-            <a class="mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">
-              {{ post.author.username }}
-          </a>
+{% for post in posts.items %} 
+<article class="media content-section d-flex flex-row">
+    <div class="media-body">
+        <div class="article-metadata d-flex justify-content-between mt-2">
+            <div class="d-flex">
+                <img src="{{ url_for('static', filename='profile_pics/' + post.author.image_file) }}" alt=""
+                    class="rounded-circle account-img">
+                
+                <div class="d-block mt-4">
+                    <a class="d-block " href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
+                    <small class="d-block text-muted">{{ post.date_posted.strftime('%d-%B-%y %H:%m') }}</small>                    
+                </div>
+            </div>
+        </div>
+        
+        <h3>
+           
+            <a class="article-title" href="{{ url_for('post', slug=slug(post)) }}">{{ post.title }}</a>
+        </h3>
 
-            <img class="rounded-circle article-img" 
-            src=" {{ url_for('static',filename='profile_pics/' + post.author.image_file )}}">  
+        <p class="article-content post-preview">{{ post.short_description }}</p> 
           </div>
         </article>
     {% endfor %}

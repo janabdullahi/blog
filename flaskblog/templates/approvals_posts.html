@@ -1,19 +1,4 @@
 {% extends "layout.html" %} {% block content %} 
-
-<table>
-<thead class="d-flex justify-content-around">
-  <th>
-    Post Title
-  </th>
-  <th>
-    Blogger
-  </th>
-  <th>
-    Actions
-  </th>
-</thead>
-<tbody>
-
 </tbody>
 </table>
 {% if posts.items %} 
@@ -32,14 +17,14 @@
       <div class="d-flex">
         {% if current_user.role == 1 %}
         <form
-          action="{{ url_for('approve_post', post_title=post.title) }}"
+          action="{{ url_for('approve_post', post_id=post.id) }}"
           method="post"
         >
           <div>
             <input
               type="submit"
               class="btn btn-success btn-sm mt-1 mb-1"
-              value="approve"
+              value="Approve"
             />
           </div>
         </form>
@@ -58,18 +43,18 @@
         {% endif %}
       </div>
     </div>
-    <h2>
-      <a class="article-title" href="{{ url_for('post', post_title=post.title) }}">
+    <h3>
+      <a class="article-title" href="{{ url_for('post',slug=slug(post)) }}">
         {{ post.title }}</a
       >
-    </h2>
-    <p class="article-content">{{ post.content }}</p>
+    </h3>
+    <p class="article-content">{{ post.content|safe }}</p>
   </div>
 </article>
 {% endfor %}
 
 {% else %}
-<p>No Post...</p>
+<p>No Pending Post Found...</p>
 {% endif %}
 
 {% for page_num in posts.iter_pages( left_edge=1, right_edge=1,

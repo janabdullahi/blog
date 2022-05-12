@@ -1,7 +1,7 @@
 from datetime import datetime
-from email.policy import default
 from flaskblog import db, login_manager
 from flask_login import UserMixin
+
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -54,7 +54,8 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     likes = db.relationship('PostLike', backref='post', lazy='dynamic')
     is_approved = db.Column(db.Boolean, default=False)
-    image_file = db.Column(db.String(20), nullable=False, default='default.jpg')
+    image_file = db.Column(db.String(20), nullable=True)
+    short_description = db.Column(db.String(250), nullable=False)
 
     def __repr__(self):
         return f"Post('{self.title}', '{self.date_posted}')"
