@@ -33,8 +33,8 @@
                             class="rounded-circle account-img">
                         
                         <div class="d-block mt-4">
-                            <a class="d-block mr-2" href="{{ url_for('user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
-                            <small class="d-block text-muted">{{ post.date_posted.strftime('%d-%B-%y %H:%m') }}</small>                    
+                            <a class="d-block mr-2" href="{{ url_for('user_posts', username=post.author.username) }}" style=" font-weight: bold; ">{{ post.author.username }}</a>
+                            <small class="d-block text-muted">{{ post.date_posted.strftime('%d-%B-%y %H:%M') }}</small>                    
                         </div>
                     </div>
                 </div>
@@ -50,6 +50,7 @@
         </article>
     {% endfor %}
     
+    {%if posts.pages > 1 %}
     {% for page_num in posts.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %} 
         {% if page_num %}
             {% if posts.page == page_num %}
@@ -61,4 +62,5 @@
             ...   
         {% endif %}
     {% endfor %}
+    {%endif%}
 {% endblock %}

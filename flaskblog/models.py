@@ -8,7 +8,7 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
-# Usermixin help users for logging 
+# Usermixin helps user for logging 
 # backref used to allows you to declare a new property under a specified class
 # lazy = True (when to get children)
 class User(db.Model, UserMixin):

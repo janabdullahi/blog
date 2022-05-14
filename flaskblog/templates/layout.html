@@ -1,11 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <!-- Required meta tags -->
-    <!-- <meta charset="utf-8">
-    <meta name="viewport" 
-    content="width=device-width, initial-scale=1, shrink-to-fit=no"> -->
-
+    
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" 
     integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
@@ -31,43 +27,48 @@
             <span class="navbar-toggler-icon"></span>
           </button>
           <div class="collapse navbar-collapse" id="navbarToggle">
-            <!-- <div class="navbar-nav mr-auto">
-              <a class="nav-item nav-link" href="{{ url_for('home') }}">Home</a>
-            </div> -->
-            </div>
-            <!-- Navbar Right Side -->
-            <div class="navbar-nav mt-0">
+            <div class="navbar-nav mt-0 d-flex justify-content-between" style="flex: 1;">
               {% if current_user.is_authenticated  and (current_user.role==1) %} 
-              <a class="nav-item nav-link" href="{{ url_for('new_post') }}">New Post</a>
-              <a class="nav-item nav-link" href="{{ url_for('approvals') }}">Pending Posts</a>
-              <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
-              <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+              <div class="d-md-flex">
+                <a class="nav-item nav-link" href="{{ url_for('new_post') }}">New Post</a>
+                <a class="nav-item nav-link" href="{{ url_for('approvals') }}">Pending Posts</a>
+              </div>
+              <div class="d-md-flex">
+                <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
+                <a class="nav-item nav-link" href="{{ url_for('logout') }}">Sign out</a>
+              </div>
                 
 
-               {% elif current_user.is_authenticated  and ( current_user.role==2) %}
-                <a class="nav-item nav-link" href="{{ url_for('new_post') }}">New Post</a>
+              {% elif current_user.is_authenticated  and ( current_user.role==2) %}
+              <div>
+                <a class="nav-item nav-link " href="{{ url_for('new_post') }}">New Post</a>
+              </div>
+              <div class="d-md-flex mr-3">
                 <a class="nav-item nav-link" href="{{ url_for('account') }}">Account</a>
-                <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
-                
-                {% elif current_user.is_authenticated  and ( current_user.role==3) %}
-                <a class="nav-item nav-link" href="{{ url_for('logout') }}">Logout</a>
+                <a class="nav-item nav-link" href="{{ url_for('logout') }}">Sign out</a>
+              </div>
+              
+              {% elif current_user.is_authenticated  and ( current_user.role==3) %}
+              <div></div>
+              <a class="nav-item nav-link" href="{{ url_for('logout') }}">Sign out</a>
 
               {% else %}
-              <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
-              <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
+              <div></div>
+              <div class="d-md-flex">
+                <a class="nav-item nav-link" href="{{ url_for('login') }}">Login</a>
+                <a class="nav-item nav-link" href="{{ url_for('register') }}">Register</a>
+              </div>
               {%endif%}
             </div>
-
             <form method="POST"  action="{{ url_for('search') }}" class="d-flex">
               {{searchForm.hidden_tag()}}
               <fieldset class="form-group mb-0" >
-                  {{ searchForm.searched(placeholder="Enter Title") }}
+                  {{ searchForm.searched(placeholder="Search By Title") }}
                 </div>
               </fieldset>                  
             </form>
-
-            
           </div>
+        
         </div>
       </nav>
     </header>

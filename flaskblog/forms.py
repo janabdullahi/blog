@@ -45,7 +45,7 @@ class UpdateAccountForm(FlaskForm):
     email = StringField('Email',validators=[DataRequired(), Email()])
     picture = FileField('Upload Photo', validators=[FileAllowed(['jpg', 'png'])])
     password = PasswordField('password')
-    new_password = PasswordField('Create new Password',validators=[DataRequired(),
+    new_password = PasswordField('Create New Password',validators=[DataRequired(),
                                 Regexp(".*[a-z].*",message="Password Must Contain Lowercase"),
                                 Regexp(".*[A-Z].*", message=" ,Uppercase"),
                                 Regexp(".*[0-9].*", message=",Digits"),
